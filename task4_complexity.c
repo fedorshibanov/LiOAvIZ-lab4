@@ -52,10 +52,14 @@ int Count(struct Node *r, int data)
 
 void print_tree(struct Node *r, int l)
 {
+    static int d[256];
     if (r == NULL) return;
+    d[l + 1] = 1;
     print_tree(r->right, l + 1);
-    for (int i = 0; i < l; i++) printf("    ");
+    for (int i = 1; i < l; i++) printf(d[i] != d[i + 1] ? "│   " : "    ");
+    if (l > 0) printf(d[l] == 1 ? "┌── " : "└── ");
     printf("%d\n", r->data);
+    d[l + 1] = -1;
     print_tree(r->left, l + 1);
 }
 
