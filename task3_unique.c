@@ -61,11 +61,28 @@ struct Node *Delete(struct Node *r, int data)
         if (r->left == NULL) { tmp = r->right; free(r); return tmp; }
         if (r->right == NULL) { tmp = r->left; free(r); return tmp; }
         tmp = r->left;
+        
         while (tmp->right != NULL) tmp = tmp->right;
+        
         r->data = tmp->data;
         r->left = Delete(r->left, tmp->data);
     }
     return r;
+}
+
+void Change(int old, int val)
+{
+    if (Search(root, old) == NULL) {
+        printf("Znachenie %d ne naydeno\n", old);
+        return;
+    }
+    if (Search(root, val) != NULL) {
+        printf("Znachenie %d uzhe est v dereve\n", val);
+        return;
+    }
+    root = Delete(root, old);
+    root = CreateTree(root, root, val, 0);
+    printf("Znachenie %d izmeneno na %d\n\n", old, val);
 }
 
 void print_tree(struct Node *r, int l)
@@ -94,7 +111,7 @@ int main()
             printf("Postroenie dereva okoncheno\n\n");
             start = 0;
         }
-        else root = CreateTree(root, root, D, 0);
+        else root = CreateTree(root, root, D, 1);
     }
 
     print_tree(root, 0);
@@ -103,14 +120,11 @@ int main()
     scanf("%d", &D);
     if (Search(root, D) != NULL) printf("Znachenie %d naydeno\n", D);
     else printf("Znachenie %d ne naydeno\n", D);
+    printf("Chislo vhozhdeniy: %d\n", Count(root, D));
 
-    printf("\nVvedite udalyaemoe znachenie: ");
-    scanf("%d", &D);
-    if (Search(root, D) == NULL) printf("Znachenie %d ne naydeno\n", D);
-    else {
-        root = Delete(root, D);
-        printf("Znachenie %d udaleno\n\n", D);
-    }
+    printf("\nVvedite staroe i novoe znachenie: ");
+    scanf("%d %d", &D, &N);
+    Change(D, N);
     print_tree(root, 0);
 
     return 0;
