@@ -10,7 +10,7 @@ struct Node {
 
 struct Node *root;
 
-struct Node *CreateTree(struct Node *root, struct Node *r, int data)
+struct Node *CreateTree(struct Node *root, struct Node *r, int data, int level)
 {
     if (r == NULL) {
         r = (struct Node *)malloc(sizeof(struct Node));
@@ -26,9 +26,12 @@ struct Node *CreateTree(struct Node *root, struct Node *r, int data)
         else root->right = r;
         return r;
     }
-    if (data == r->data) return root;
-    if (data > r->data) CreateTree(r, r->left, data);
-    else CreateTree(r, r->right, data);
+    if (data == r->data){
+        printf("Incorrect value. Level:%i\n", level);
+        return root;
+    }    
+    if (data > r->data) CreateTree(r, r->left, data, level+1);
+    else CreateTree(r, r->right, data, level+1);
     return root;
 }
 
@@ -48,6 +51,23 @@ int Count(struct Node *r, int data)
     return Count(r->right, data);
 }
 
+struct Node *Delete(struct Node *r, int data)
+{
+    struct Node *tmp;
+    if (r == NULL) return NULL;
+    if (data > r->data) r->left = Delete(r->left, data);
+    else if (data < r->data) r->right = Delete(r->right, data);
+    else {
+        if (r->left == NULL) { tmp = r->right; free(r); return tmp; }
+        if (r->right == NULL) { tmp = r->left; free(r); return tmp; }
+        tmp = r->left;
+        while (tmp->right != NULL) tmp = tmp->right;
+        r->data = tmp->data;
+        r->left = Delete(r->left, tmp->data);
+    }
+    return r;
+}
+
 void print_tree(struct Node *r, int l)
 {
     static int d[256];
@@ -63,7 +83,7 @@ void print_tree(struct Node *r, int l)
 
 int main()
 {
-    int D, start = 1;
+    int D, N, start = 1;
     root = NULL;
 
     printf("-1 - okonchanie postroeniya dereva\n");
@@ -74,7 +94,7 @@ int main()
             printf("Postroenie dereva okoncheno\n\n");
             start = 0;
         }
-        else root = CreateTree(root, root, D);
+        else root = CreateTree(root, root, D, 0);
     }
 
     print_tree(root, 0);
@@ -83,7 +103,15 @@ int main()
     scanf("%d", &D);
     if (Search(root, D) != NULL) printf("Znachenie %d naydeno\n", D);
     else printf("Znachenie %d ne naydeno\n", D);
-    printf("Chislo vhozhdeniy: %d\n", Count(root, D));
+
+    printf("\nVvedite udalyaemoe znachenie: ");
+    scanf("%d", &D);
+    if (Search(root, D) == NULL) printf("Znachenie %d ne naydeno\n", D);
+    else {
+        root = Delete(root, D);
+        printf("Znachenie %d udaleno\n\n", D);
+    }
+    print_tree(root, 0);
 
     return 0;
 }
