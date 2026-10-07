@@ -47,6 +47,26 @@ int Count(struct Node *r, int data)
     return Count(r->right, data);
 }
 
+void PrintLevels(struct Node *r, int data)
+{
+    int level = 0;
+    int n = 0;
+
+    while (r != NULL) {
+        if (data == r->data) {
+            n++;
+            if (n == 1)
+                printf("Pervoe vhozhdenie: uroven %d\n", level);
+            else
+                printf("Povtor %d: uroven %d\n", n - 1, level);
+            r = r->right;
+        }
+        else if (data > r->data) r = r->left;
+        else r = r->right;
+        level++;
+    }
+}
+
 void print_tree(struct Node *r, int l)
 {
     static int d[256];
@@ -80,9 +100,12 @@ int main()
 
     printf("\nVvedite iskomoe znachenie: ");
     scanf("%d", &D);
-    if (Search(root, D) != NULL) printf("Znachenie %d naydeno\n", D);
+    if (Search(root, D) != NULL) {
+        printf("Znachenie %d naydeno\n", D);
+        printf("Chislo vhozhdeniy: %d\n", Count(root, D));
+        PrintLevels(root, D);
+    }
     else printf("Znachenie %d ne naydeno\n", D);
-    printf("Chislo vhozhdeniy: %d\n", Count(root, D));
 
     return 0;
 }
